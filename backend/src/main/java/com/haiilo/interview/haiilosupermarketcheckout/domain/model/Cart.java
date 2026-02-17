@@ -20,7 +20,10 @@ public class Cart {
     private List<CartItem> items = new ArrayList<>();
 
     public void addProduct(Product product, int quantity) {
-        CartItem item = new CartItem(this, product, quantity);
+        CartItem item = new CartItem();
+        item.setCart(this);
+        item.setProduct(product);
+        item.setQuantity(quantity);
         this.items.add(item);
     }
 
