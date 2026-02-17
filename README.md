@@ -1,17 +1,4 @@
-# Haiilo Supermarket Checkout KATA
-
-A simplified supermarket checkout system built with Spring Boot, Java 21, and PostgreSQL.
-
-## 🏗 Architecture
-- **DDD-inspired Structure**: Separation of Concerns between API, Domain, and Infrastructure.
-- **Persistence**: PostgreSQL with UUIDs for enhanced security and scalability.
-- **Logic**: Automatic application of "Weekly Offers" (Bundle Pricing) during checkout.
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Java 21**
-- **Docker Desktop** (must be running)
+Description:Implement a simplified supermarket checkout system. The cart can contain any number and combination of available items, in any order. Additionally the checkout system should support weekly offers, where an offer defines a number of items that are discounted when bought together. For example: one apple costs 0.30€, but 2 apples are offered at 0.45€. These offers should be applied automatically during checkout.
 
 ### How to Run
 1. **Clone the repository.**
