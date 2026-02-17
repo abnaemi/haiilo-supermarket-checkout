@@ -28,9 +28,19 @@
         </mat-card-header>
 
         <mat-card-content>
-          <p class="price-tag">
-            {{ product.price | currency:'EUR' }}
-          </p>
+          <div class="price-section">
+            <p class="price-tag" style="margin-bottom: 4px;">
+              {{ product.price | currency:'EUR' }}
+            </p>
+
+            @if (getOfferInfo(product.id); as info) {
+              <p style="color: #2e7d32; font-size: 0.85rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 4px;">
+                <mat-icon style="font-size: 16px; width: 16px; height: 16px;">local_offer</mat-icon>
+                {{ info }}
+              </p>
+            } @else {
+              <div style="height: 19px;"></div> }
+          </div>
 
           <mat-form-field appearance="outline" style="width: 100%; margin-top: 1rem;">
             <mat-label>Quantity</mat-label>
@@ -61,7 +71,7 @@
       </mat-card>
     } @empty {
       <div class="loading-state">
-        <p>No products found. Please check your Backend connection.</p>
+        <p>No products found. Please check your Server connection.</p>
       </div>
     }
   </main>

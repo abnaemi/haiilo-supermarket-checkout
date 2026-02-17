@@ -88,4 +88,12 @@ export class ProductListComponent implements OnInit {
       autoFocus: false
     });
   }
+
+  getOfferInfo(productId: string): string | null {
+    const offer = this.cartService.weeklyOffers().find(o => String(o.productId) === String(productId));
+    if (offer) {
+      return `Special Offer: ${offer.requiredQuantity} for ${offer.offerPrice.toFixed(2)} €`;
+    }
+    return null;
+  }
 }

@@ -2,6 +2,7 @@ package com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistenc
 
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@Transactional
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:postgresql://localhost:5433/supermarket",
         "spring.datasource.username=user",

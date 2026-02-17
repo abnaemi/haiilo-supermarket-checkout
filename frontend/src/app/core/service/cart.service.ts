@@ -10,7 +10,7 @@ export class CartService {
   private offerService = inject(OfferService);
   private http = inject(HttpClient);
   private cartItems = signal<CartItem[]>([]);
-  private weeklyOffers = signal<WeeklyOffer[]>([]);
+  weeklyOffers = signal<WeeklyOffer[]>([]);
 
 
   items = this.cartItems.asReadonly();
