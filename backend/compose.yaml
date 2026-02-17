@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: supermarket-dbconfig
+    environment:
+      POSTGRES_DB: supermarketconfig
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d supermarket"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
