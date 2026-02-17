@@ -1,50 +1,37 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { OfferService, WeeklyOffer } from './offer.service';
+import { OrderService } from './order.service';
 import { CartItem } from '../models/cart-item.model';
 import { Product } from '../models/Product';
-import {Observable} from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import {CartCalculator} from '../utis/CartCalculator';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private offerService = inject(OfferService);
-  private http = inject(HttpClient);
+  private orderService = inject(OrderService);
+
   private cartItems = signal<CartItem[]>([]);
+
   weeklyOffers = signal<WeeklyOffer[]>([]);
-
-
   items = this.cartItems.asReadonly();
 
   count = computed(() => this.cartItems().reduce((s, i) => s + i.quantity, 0));
 
-  constructor() {
-    this.loadOffers();
-  }
-
-  loadOffers() {
-    this.offerService.getOffers().subscribe(offers => this.weeklyOffers.set(offers));
-  }
-
   totalPrice = computed(() => {
     return this.cartItems().reduce((total, item) => {
-      const offer = this.weeklyOffers().find(o => String(o.productId) === String(item.id));
-      if (offer && item.quantity >= offer.requiredQuantity) {
-
-
-        const priceForOfferBundle = offer.offerPrice;
-        const remainingQuantity = item.quantity - offer.requiredQuantity;
-        const priceForRest = remainingQuantity * item.price;
-
-        const subtotal = priceForOfferBundle + priceForRest;
-
-        console.log(`Einmaliges Angebot für ${item.name}: Paketpreis ${priceForOfferBundle}€ + Rest (${remainingQuantity} Stk) ${priceForRest}€ = ${subtotal}€`);
-
-        return total + subtotal;
-      }
-
-      return total + (item.quantity * item.price);
+      return total + CartCalculator.calculateItemSubtotal(item, this.weeklyOffers());
     }, 0);
   });
+
+  constructor() {
+    this.loadInitialOffers();
+  }
+
+  private loadInitialOffers() {
+    this.offerService.getOffers().subscribe(offers => this.weeklyOffers.set(offers));
+  }
 
   addToCart(product: Product, quantity: number) {
     this.cartItems.update(items => {
@@ -53,36 +40,26 @@ export class CartService {
       if (index > -1) {
         const updated = [...items];
         const newQty = updated[index].quantity + quantity;
-        updated[index] = { ...updated[index], quantity: newQty > 99 ? 99 : newQty };
+        updated[index] = { ...updated[index], quantity: Math.min(newQty, 99) };
         return updated;
       }
 
-      return [...items, { ...product, quantity: quantity }];
+      return [...items, { ...product, quantity }];
     });
   }
 
   updateQuantity(id: number | string, delta: number) {
-    this.cartItems.update(items => items.map(i =>
-      i.id === id ? { ...i, quantity: i.quantity + delta } : i
-    ).filter(i => i.quantity > 0));
+    this.cartItems.update(items => items
+      .map(i => i.id === id ? { ...i, quantity: i.quantity + delta } : i)
+      .filter(i => i.quantity > 0 && i.quantity <= 99)
+    );
   }
 
   clearCart() {
     this.cartItems.set([]);
   }
 
-
-checkout(): Observable<any> {
-  const orderData = {
-    totalAmount: this.totalPrice(),
-    items: this.items().map(item => ({
-      productId: item.id,
-      productName: item.name,
-      quantity: item.quantity,
-      priceAtPurchase: item.price
-    }))
-  };
-
-  return this.http.post('http://localhost:8080/api/v1/orders', orderData);
-}
+  checkout(): Observable<any> {
+    return this.orderService.placeOrder(this.totalPrice(), this.cartItems());
+  }
 }
