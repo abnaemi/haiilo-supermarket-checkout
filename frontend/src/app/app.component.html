@@ -14,12 +14,18 @@
 
   <aside class="admin-sidebar">
     <h3>Admin Panel</h3>
+    <mat-label>For tests</mat-label>
 
     <section class="admin-section">
       <div class="section-title">
         <h4>Products</h4>
         <button class="add-icon-btn" (click)="showProductPopup = true">+</button>
       </div>
+
+      <div class="click-info-box">
+        Click a product to create a Weekly Offer
+      </div>
+
       <ul class="admin-list">
         @for (p of products; track p.id) {
           <li class="admin-item">
@@ -39,7 +45,6 @@
     <section class="admin-section">
       <div class="section-title">
         <h4>Weekly Offers</h4>
-        <button class="add-icon-btn" (click)="showOfferPopup = true">+</button>
       </div>
       <ul class="admin-list">
         @for (o of offers; track o.id) {

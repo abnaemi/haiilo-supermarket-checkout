@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from './core/service/product.service';
 import { OfferService } from './core/service/offer.service';
 import { ProductListComponent } from './features/product-list/product-list.component';
+import {MatLabel} from '@angular/material/input';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, ProductListComponent],
+  imports: [CommonModule, FormsModule, ProductListComponent, MatLabel],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

@@ -35,34 +35,14 @@
   h3 { margin-top: 0; border-bottom: 2px solid #3f51b5; padding-bottom: 5px; }
 }
 
-.admin-section {
-  margin-top: 15px;
-  .section-title {
-    display: flex; justify-content: space-between; align-items: center;
-    h4 { margin: 0; color: #555; font-size: 0.9rem; }
-  }
-}
+
 
 .add-icon-btn {
   background: #4caf50; color: white; border: none; border-radius: 50%;
   width: 24px; height: 24px; cursor: pointer; font-weight: bold;
 }
 
-.admin-list {
-  list-style: none; padding: 0;
-  .admin-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px; border: 1px solid #eee; margin-top: 6px; border-radius: 6px;
-    background: #fafafa;
 
-    .item-info {
-      flex: 1; cursor: pointer;
-      .item-name { font-weight: bold; display: block; font-size: 0.9rem; }
-      .item-sub { color: #666; font-size: 0.8rem; }
-      .id-hint { display: block; font-size: 0.65rem; color: #aaa; }
-    }
-  }
-}
 
 .del-btn { background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.5; &:hover { opacity: 1; } }
 
@@ -96,5 +76,52 @@
   .btn-save {
     background: #3f51b5; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;
     &:disabled { background: #ccc; cursor: not-allowed; }
+  }
+}
+.admin-section {
+  margin-top: 15px;
+
+  .section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h4 { margin: 0; color: #555; font-size: 0.9rem; }
+  }
+}
+
+/* Die neue Info-Box */
+.click-info-box {
+  margin: 10px 0;
+  padding: 6px 10px;
+  border: 1px solid #3f51b5; // Dein Primary-Blau als Rahmen
+  border-radius: 20px;       // Schön rund (Pillen-Design)
+  font-size: 0.75rem;
+  color: #3f51b5;
+  background-color: #f5f7ff; // Ganz leichtes Blau im Hintergrund
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Bestehende Admin-List Styles */
+.admin-list {
+  list-style: none;
+  padding: 0;
+  .admin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #eee;
+    margin-top: 6px;
+    border-radius: 6px;
+    background: #fafafa;
+
+    .item-info {
+      flex: 1;
+      cursor: pointer;
+      .item-name { font-weight: bold; display: block; font-size: 0.9rem; }
+      .item-sub { color: #666; font-size: 0.8rem; }
+      .id-hint { display: block; font-size: 0.65rem; color: #aaa; }
+    }
   }
 }
