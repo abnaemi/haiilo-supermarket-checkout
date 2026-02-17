@@ -1,12 +1,13 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {CartItem} from '../models/cart-item.model';
-import {Observable} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CartItem } from '../models/cart-item.model';
+import { Observable } from 'rxjs';
+import {environment} from '../../../enviroments/enviroments';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:8080/api/v1/orders';
+  private readonly API_URL = `${environment.apiUrl}/orders`;
 
   placeOrder(total: number, items: CartItem[]): Observable<any> {
     const payload = {

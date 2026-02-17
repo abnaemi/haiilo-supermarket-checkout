@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from '../../../enviroments/enviroments';
 
 export interface WeeklyOffer {
   id: string;
@@ -13,7 +14,7 @@ export interface WeeklyOffer {
 @Injectable({ providedIn: 'root' })
 export class OfferService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/v1/offers';
+  private readonly apiUrl = `${environment.apiUrl}/offers`;
 
   getOffers(): Observable<WeeklyOffer[]> {
     return this.http.get<WeeklyOffer[]>(this.apiUrl);
