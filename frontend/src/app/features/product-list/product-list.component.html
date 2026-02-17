@@ -15,60 +15,12 @@
 
   <main class="product-grid">
     @for (product of products; track product.id) {
-      <mat-card class="product-card mat-elevation-z2">
-        <div class="image-wrapper">
-          <img mat-card-image
-               [src]="getProductImage(product.name)"
-               [alt]="product.name">
-        </div>
-
-        <mat-card-header>
-          <mat-card-title>{{ product.name }}</mat-card-title>
-          <mat-card-subtitle>Groceries</mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="price-section">
-            <p class="price-tag" style="margin-bottom: 4px;">
-              {{ product.price | currency:'EUR' }}
-            </p>
-
-            @if (getOfferInfo(product.id); as info) {
-              <p style="color: #2e7d32; font-size: 0.85rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 4px;">
-                <mat-icon style="font-size: 16px; width: 16px; height: 16px;">local_offer</mat-icon>
-                {{ info }}
-              </p>
-            } @else {
-              <div style="height: 19px;"></div> }
-          </div>
-
-          <mat-form-field appearance="outline" style="width: 100%; margin-top: 1rem;">
-            <mat-label>Quantity</mat-label>
-            <input matInput
-                   type="number"
-                   [(ngModel)]="quantities[product.id]"
-                   min="1"
-                   max="99">
-
-            <mat-hint align="start">Max. 99 items</mat-hint>
-
-            @if (quantities[product.id] > 99) {
-              <mat-error>Too many items!</mat-error>
-            }
-          </mat-form-field>
-        </mat-card-content>
-
-        <mat-card-actions>
-          <button mat-flat-button
-                  color="accent"
-                  style="width: 100%; padding: 20px 0;"
-                  (click)="addToCart(product)"
-                  [disabled]="quantities[product.id] > 99 || quantities[product.id] < 1 || !quantities[product.id]">
-            <mat-icon>add_shopping_cart</mat-icon>
-            Add to Cart
-          </button>
-        </mat-card-actions>
-      </mat-card>
+      <app-product-card
+        [product]="product"
+        [image]="getProductImage(product.name)"
+        [offerInfo]="getOfferInfo(product.id)"
+        (addToCart)="onAddToCart($event)">
+      </app-product-card>
     } @empty {
       <div class="loading-state">
         <p>No products found. Please check your Server connection.</p>

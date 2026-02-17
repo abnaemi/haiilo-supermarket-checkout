@@ -1,0 +1,76 @@
+.product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+  }
+
+  .image-wrapper {
+    height: 200px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      max-height: 80%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+
+  .price-section {
+    margin-bottom: 16px;
+
+    .price-tag {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+    }
+
+    .offer-info {
+      color: #2e7d32;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 4px 0 0 0;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  mat-card-content {
+    flex-grow: 1; // Drückt die Actions immer nach unten
+  }
+
+  .w-full {
+    width: 100%;
+  }
+
+  .mt-4 {
+    margin-top: 16px;
+  }
+
+  .py-5 {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
