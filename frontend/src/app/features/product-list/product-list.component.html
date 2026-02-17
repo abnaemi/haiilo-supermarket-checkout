@@ -4,20 +4,21 @@
     <span>Haiilo Supermarket</span>
     <span class="spacer"></span>
 
-    <button mat-icon-button aria-label="View shopping cart">
-      <mat-icon [matBadge]="cartCount"
+    <button mat-icon-button (click)="openCart()" aria-label="View shopping cart">
+      <mat-icon [matBadge]="cartService.count()"
                 matBadgeColor="accent"
-                [matBadgeHidden]="cartCount === 0"
-                aria-hidden="false">
+                [matBadgeHidden]="cartService.count() === 0"
+                aria-hidden="false"
+                aria-label="Items in cart">
         shopping_cart
       </mat-icon>
     </button>
   </mat-toolbar>
 
-  <div class="product-grid">
+  <main class="product-grid">
     @for (product of products; track product.id) {
       <mat-card class="product-card mat-elevation-z2">
-        <div class="image-container">
+        <div class="image-wrapper">
           <img mat-card-image
                [src]="getProductImage(product.name)"
                [alt]="product.name">
@@ -41,6 +42,10 @@
           </button>
         </mat-card-actions>
       </mat-card>
+    } @empty {
+      <div class="loading-state">
+        <p>No products found. Please check your Backend connection.</p>
+      </div>
     }
-  </div>
+  </main>
 </div>

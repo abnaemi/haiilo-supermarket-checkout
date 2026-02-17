@@ -1,6 +1,7 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.service;
 
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OfferRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
 import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.WeeklyOfferRepository;
@@ -41,12 +42,14 @@ class OfferServiceImplTest {
         when(offerRepository.findFirstByProductId(productId)).thenReturn(Optional.of(oldOffer));
         when(offerRepository.save(any(WeeklyOffer.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        WeeklyOffer result = offerService.createOrUpdateOffer(request);
+        WeeklyOfferDTO result = offerService.createOrUpdateOffer(request);
 
         verify(offerRepository).delete(oldOffer);
-        assertThat(result.getRequiredQuantity()).isEqualTo(3);
-        assertThat(result.getOfferPrice()).isEqualByComparingTo("0.70");
-    }
+        verify(offerRepository).save(any(WeeklyOffer.class));
+
+        assertThat(result.productId()).isEqualTo(productId);
+        assertThat(result.requiredQuantity()).isEqualTo(3);
+        assertThat(result.offerPrice()).isEqualByComparingTo(BigDecimal.valueOf(0.70));    }
 
     @Test
     void deleteOffer_success() {

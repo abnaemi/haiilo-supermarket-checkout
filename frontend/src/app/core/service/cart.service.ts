@@ -1,0 +1,68 @@
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { OfferService, WeeklyOffer } from './offer.service';
+import { CartItem } from '../models/cart-item.model';
+import { Product } from '../models/Product';
+
+@Injectable({ providedIn: 'root' })
+export class CartService {
+  private offerService = inject(OfferService);
+
+  private cartItems = signal<CartItem[]>([]);
+  private weeklyOffers = signal<WeeklyOffer[]>([]);
+
+
+  items = this.cartItems.asReadonly();
+
+  count = computed(() => this.cartItems().reduce((s, i) => s + i.quantity, 0));
+
+  constructor() {
+    this.loadOffers();
+  }
+
+  loadOffers() {
+    this.offerService.getOffers().subscribe(offers => this.weeklyOffers.set(offers));
+  }
+
+  totalPrice = computed(() => {
+    return this.cartItems().reduce((total, item) => {
+      const offer = this.weeklyOffers().find(o => String(o.productId) === String(item.id));
+      if (offer && item.quantity >= offer.requiredQuantity) {
+
+
+        const priceForOfferBundle = offer.offerPrice;
+        const remainingQuantity = item.quantity - offer.requiredQuantity;
+        const priceForRest = remainingQuantity * item.price;
+
+        const subtotal = priceForOfferBundle + priceForRest;
+
+        console.log(`Einmaliges Angebot für ${item.name}: Paketpreis ${priceForOfferBundle}€ + Rest (${remainingQuantity} Stk) ${priceForRest}€ = ${subtotal}€`);
+
+        return total + subtotal;
+      }
+
+      return total + (item.quantity * item.price);
+    }, 0);
+  });
+
+  addToCart(product: Product) {
+    this.cartItems.update(items => {
+      const index = items.findIndex(i => i.id === product.id);
+      if (index > -1) {
+        const updated = [...items];
+        updated[index] = { ...updated[index], quantity: updated[index].quantity + 1 };
+        return updated;
+      }
+      return [...items, { ...product, quantity: 1 }];
+    });
+  }
+
+  updateQuantity(id: number | string, delta: number) {
+    this.cartItems.update(items => items.map(i =>
+      i.id === id ? { ...i, quantity: i.quantity + delta } : i
+    ).filter(i => i.quantity > 0));
+  }
+
+  clearCart() {
+    this.cartItems.set([]);
+  }
+}

@@ -1,5 +1,6 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -23,6 +24,7 @@ public class WeeklyOffer {
     @NotNull(message = "Product reference is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Verhindert Proxy-Fehler
     private Product product;
 
     @Min(value = 2, message = "Offer must require at least 2 items")

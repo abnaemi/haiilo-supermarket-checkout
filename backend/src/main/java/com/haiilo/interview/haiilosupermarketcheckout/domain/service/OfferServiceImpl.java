@@ -1,15 +1,19 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.service;
 
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OfferRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO; // Neu
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
 import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.WeeklyOfferRepository;
-import jakarta.persistence.EntityNotFoundException; // WICHTIGER IMPORT
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,7 +25,7 @@ public class OfferServiceImpl implements OfferService {
     private final ProductService productService;
 
     @Override
-    public WeeklyOffer createOrUpdateOffer(OfferRequestDTO request) {
+    public WeeklyOfferDTO createOrUpdateOffer(OfferRequestDTO request) {
         log.info("Processing offer request for product ID: {}", request.productId());
 
         Product product = productService.getProductEntityById(request.productId());
@@ -30,6 +34,8 @@ public class OfferServiceImpl implements OfferService {
                 .ifPresent(existingOffer -> {
                     log.debug("Removing existing offer {} to replace it", existingOffer.getId());
                     offerRepository.delete(existingOffer);
+                    // Flush sicherstellen, damit der Unique Constraint (falls vorhanden) nicht knallt
+                    offerRepository.flush();
                 });
 
         WeeklyOffer newOffer = new WeeklyOffer(product, request.requiredQuantity(), request.offerPrice());
@@ -37,19 +43,37 @@ public class OfferServiceImpl implements OfferService {
 
         log.info("New offer created for product {}: {} for {} EUR",
                 product.getName(), savedOffer.getRequiredQuantity(), savedOffer.getOfferPrice());
-        return savedOffer;
+
+        return mapToDTO(savedOffer);
     }
 
     @Override
     public void deleteOffer(UUID offerId) {
         log.info("Attempting to delete offer: {}", offerId);
-
         if (!offerRepository.existsById(offerId)) {
             log.warn("Delete failed: Offer {} not found", offerId);
             throw new EntityNotFoundException("Offer not found: " + offerId);
         }
-
         offerRepository.deleteById(offerId);
-        log.info("Offer {} successfully deleted", offerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WeeklyOfferDTO> getAllOffers() {
+        log.debug("Fetching all active weekly offers and mapping to DTO");
+        return offerRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Hilfsmethode zur Vermeidung von LazyLoading- und Recursion-Problemen
+    private WeeklyOfferDTO mapToDTO(WeeklyOffer offer) {
+        return new WeeklyOfferDTO(
+                offer.getId(),
+                offer.getProduct().getId(),
+                offer.getProduct().getName(),
+                offer.getRequiredQuantity(),
+                offer.getOfferPrice()
+        );
     }
 }

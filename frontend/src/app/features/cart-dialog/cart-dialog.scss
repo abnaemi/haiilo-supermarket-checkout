@@ -1,0 +1,25 @@
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .quantity-label {
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .item-total {
+    margin-left: 16px;
+    font-weight: 500;
+    min-width: 70px;
+    text-align: right;
+  }
+}
+
+.total-section {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 2px solid #eee;
+  text-align: right;
+}

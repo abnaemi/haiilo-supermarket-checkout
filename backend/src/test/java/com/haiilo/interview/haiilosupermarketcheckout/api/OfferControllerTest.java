@@ -2,6 +2,7 @@ package com.haiilo.interview.haiilosupermarketcheckout.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OfferRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.service.OfferService;
@@ -47,10 +48,14 @@ class OfferControllerTest {
     @Test
     void createOffer_ShouldReturnCreated() throws Exception {
         OfferRequestDTO request = new OfferRequestDTO(productId, 2, BigDecimal.valueOf(0.45));
-        WeeklyOffer savedOffer = new WeeklyOffer(testProduct, 2, BigDecimal.valueOf(0.45));
-
-        when(offerService.createOrUpdateOffer(any(OfferRequestDTO.class))).thenReturn(savedOffer);
-
+        WeeklyOfferDTO savedOfferDto = new WeeklyOfferDTO(
+                UUID.randomUUID(),
+                productId,
+                "Apple",
+                2,
+                BigDecimal.valueOf(0.45)
+        );
+        when(offerService.createOrUpdateOffer(any(OfferRequestDTO.class))).thenReturn(savedOfferDto);
         mockMvc.perform(post("/api/v1/offers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
