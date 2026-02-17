@@ -45,4 +45,18 @@ public class ProductServiceImpl implements ProductService {
         log.info("Product successfully created with ID: {}", savedProduct.getId());
         return new ProductResponseDTO(savedProduct.getId(), savedProduct.getName(), savedProduct.getPrice());
     }
+
+    @Override
+    @Transactional
+    public void deleteProduct(UUID id) {
+        log.info("Attempting to delete product with ID: {}", id);
+
+        if (!productRepository.existsById(id)) {
+            log.warn("Deletion failed: Product with ID {} not found", id);
+            throw new EntityNotFoundException("Product not found with ID: " + id);
+        }
+
+        productRepository.deleteById(id);
+        log.info("Product with ID {} successfully deleted", id);
+    }
 }

@@ -10,4 +10,5 @@ public interface ProductService {
     List<ProductResponseDTO> getAllProducts();
     Product getProductEntityById(UUID id);
     ProductResponseDTO createProduct(ProductRequestDTO request);
+    void deleteProduct(UUID id);
 }
