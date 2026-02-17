@@ -1,12 +1,24 @@
-Description:Implement a simplified supermarket checkout system. The cart can contain any number and combination of available items, in any order. Additionally the checkout system should support weekly offers, where an offer defines a number of items that are discounted when bought together. For example: one apple costs 0.30€, but 2 apples are offered at 0.45€. These offers should be applied automatically during checkout.
+Task:Implement a simplified supermarket checkout system. The cart can contain any number and combination of available items, in any order. Additionally the checkout system should support weekly offers, where an offer defines a number of items that are discounted when bought together. For example: one apple costs 0.30€, but 2 apples are offered at 0.45€. These offers should be applied automatically during checkout.
 
-### How to Run
-1. **Clone the repository.**
-2. **Start the application**:
-    - Open the project in IntelliJ.
-    - Run `HaiiloSupermarketCheckoutApplication`.
-    - *Note: Spring Boot Docker Compose will automatically start the database.*
 
+
+---
+
+## 🚀 How to Run (Docker Compose)
+
+Der schnellste Weg, die gesamte Anwendung (Frontend, Backend & Datenbank) zu starten, ist über Docker Compose.
+
+### Voraussetzungen
+- Docker und Docker Compose müssen installiert sein.
+- Die Artefakte müssen gebaut sein:
+    - **Backend**: `mvn clean package -DskipTests` im Ordner `/backend` ausführen.
+    - **Frontend**: `ng build` im Ordner `/frontend` ausführen.
+
+### Starten
+Führe im Hauptverzeichnis des Projekts den folgenden Befehl aus:
+
+```bash
+docker-compose up --build
 ### Database Details
 - **Type**: PostgreSQL (Running in Docker)
 - **Port**: `5433` (mapped from 5432 to avoid local conflicts)
