@@ -43,14 +43,26 @@ export class CartDialog {
   }
 
   private performCheckout() {
-    this.cartService.clearCart();
-    this.dialog.closeAll();
+    this.cartService.checkout().subscribe({
+      next: (response) => {
+        console.log('Order saved successfully', response);
 
-    this.snackBar.open('🚀 Order placed successfully! Thank you.', 'Great!', {
-      duration: 5000,
-      panelClass: ['success-snackbar'],
-      horizontalPosition: 'center',
-      verticalPosition: 'top'
+        this.cartService.clearCart();
+
+        this.dialogRef.close();
+
+        this.snackBar.open('🚀 Order placed and saved in Database!', 'Great!', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      },
+      error: (err) => {
+        console.error('Checkout failed', err);
+        this.snackBar.open('❌ Error: Could not save order. Is the Backend running?', 'Close', {
+          duration: 5000
+        });
+      }
     });
   }
 

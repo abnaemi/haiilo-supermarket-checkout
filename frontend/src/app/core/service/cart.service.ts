@@ -2,11 +2,13 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { OfferService, WeeklyOffer } from './offer.service';
 import { CartItem } from '../models/cart-item.model';
 import { Product } from '../models/Product';
+import {Observable} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private offerService = inject(OfferService);
-
+  private http = inject(HttpClient);
   private cartItems = signal<CartItem[]>([]);
   private weeklyOffers = signal<WeeklyOffer[]>([]);
 
@@ -68,4 +70,19 @@ export class CartService {
   clearCart() {
     this.cartItems.set([]);
   }
+
+
+checkout(): Observable<any> {
+  const orderData = {
+    totalAmount: this.totalPrice(),
+    items: this.items().map(item => ({
+      productId: item.id,
+      productName: item.name,
+      quantity: item.quantity,
+      priceAtPurchase: item.price
+    }))
+  };
+
+  return this.http.post('http://localhost:8080/api/v1/orders', orderData);
+}
 }
