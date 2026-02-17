@@ -20,11 +20,15 @@ public class Cart {
     private List<CartItem> items = new ArrayList<>();
 
     public void addProduct(Product product, int quantity) {
-        CartItem item = new CartItem();
-        item.setCart(this);
-        item.setProduct(product);
-        item.setQuantity(quantity);
-        this.items.add(item);
+        if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
+
+        this.items.stream()
+                .filter(item -> item.getProduct().getId().equals(product.getId()))
+                .findFirst()
+                .ifPresentOrElse(
+                        existingItem -> existingItem.setQuantity(existingItem.getQuantity() + quantity),
+                        () -> this.items.add(new CartItem(this, product, quantity))
+                );
     }
 
     @Override

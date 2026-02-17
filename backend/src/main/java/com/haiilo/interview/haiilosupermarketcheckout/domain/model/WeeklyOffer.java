@@ -1,6 +1,9 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,11 +20,16 @@ public class WeeklyOffer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotNull(message = "Product reference is required")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Min(value = 2, message = "Offer must require at least 2 items")
     private int requiredQuantity;
+
+    @NotNull(message = "Offer price is required")
+    @DecimalMin(value = "0.00", message = "Offer price cannot be negative")
     private BigDecimal offerPrice;
 
     public WeeklyOffer(Product product, int requiredQuantity, BigDecimal offerPrice) {

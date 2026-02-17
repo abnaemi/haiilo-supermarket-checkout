@@ -18,3 +18,8 @@ Description:Implement a simplified supermarket checkout system. The cart can con
 - **Docker Compose**
 - **Lombok**
 - **JUnit 5 & Mockito**
+  🔌 API Endpoints
+  Product Catalog
+  GET /api/v1/products
+
+  Swagger: http://localhost:8080/swagger-ui/index.html

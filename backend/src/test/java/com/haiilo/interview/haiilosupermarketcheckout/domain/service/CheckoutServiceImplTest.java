@@ -59,7 +59,7 @@ class CheckoutServiceImplTest {
     @DisplayName("Should apply bundle offer correctly (e.g., 3 apples with a '2 for 0.45' offer)")
     void shouldApplyBundleOffer() {
         Cart cart = new Cart();
-        cart.addProduct(apple, 3); // 2 in bundle + 1 individual
+        cart.addProduct(apple, 3);
 
         WeeklyOffer appleOffer = new WeeklyOffer(apple, 2, new BigDecimal("0.45"));
         when(offerRepository.findFirstByProductId(apple.getId())).thenReturn(Optional.of(appleOffer));

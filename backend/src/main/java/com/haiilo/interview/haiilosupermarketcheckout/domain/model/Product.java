@@ -18,11 +18,13 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank
+    @NotBlank(message = "Product name must not be blank")
+    @Column(nullable = false)
     private String name;
 
-    @NotNull
-    @DecimalMin("0.0")
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be greater than zero")
+    @Column(nullable = false)
     private BigDecimal price;
 
     public Product(String name, BigDecimal price) {

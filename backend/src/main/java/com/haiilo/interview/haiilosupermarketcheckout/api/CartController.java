@@ -1,81 +1,56 @@
 package com.haiilo.interview.haiilosupermarketcheckout.api;
 
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CartItemRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Cart;
-import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
+import com.haiilo.interview.haiilosupermarketcheckout.domain.service.CartService;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.service.CheckoutService;
-import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.CartRepository;
-import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.ProductRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
 public class CartController {
 
-    private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
+    private final CartService cartService;
     private final CheckoutService checkoutService;
 
     @PostMapping
     public ResponseEntity<Cart> createCart() {
-        log.info("REST request to create a new shopping cart");
-        Cart cart = cartRepository.save(new Cart());
-        return ResponseEntity.status(201).body(cart);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.createCart());
     }
 
     @GetMapping("/{cartId}")
     public ResponseEntity<Cart> getCart(@PathVariable UUID cartId) {
-        log.debug("REST request to get Cart : {}", cartId);
-        return cartRepository.findById(cartId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(cartService.getCartById(cartId));
     }
 
     @PostMapping("/{cartId}/items")
-    @Transactional
-    public ResponseEntity<Void> addProductToCart(
-            @PathVariable UUID cartId,
-            @RequestParam UUID productId,
-            @RequestParam(defaultValue = "1") int quantity) {
+    public ResponseEntity<Void> addProduct(@PathVariable UUID cartId, @RequestBody @Valid CartItemRequestDTO request) {
+        cartService.addOrUpdateProduct(cartId, request);
+        return ResponseEntity.noContent().build();
+    }
 
-        log.info("REST request to add product {} (qty: {}) to cart {}", productId, quantity, cartId);
+    @PutMapping("/{cartId}/items/{productId}")
+    public ResponseEntity<Void> updateQuantity(@PathVariable UUID cartId, @PathVariable UUID productId, @RequestParam int quantity) {
+        cartService.updateItemQuantity(cartId, productId, quantity);
+        return ResponseEntity.noContent().build();
+    }
 
-        if (quantity <= 0) {
-            log.error("Validation failed: quantity must be positive");
-            return ResponseEntity.badRequest().build();
-        }
-
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        cart.addProduct(product, quantity);
-        cartRepository.save(cart);
-
-        log.info("Product successfully added to cart");
+    @DeleteMapping("/{cartId}")
+    public ResponseEntity<Void> deleteCart(@PathVariable UUID cartId) {
+        cartService.deleteCart(cartId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{cartId}/total")
-    public ResponseEntity<BigDecimal> getCartTotal(@PathVariable UUID cartId) {
-        log.info("REST request to calculate total for cart {}", cartId);
-
-        return cartRepository.findById(cartId)
-                .map(cart -> {
-                    BigDecimal total = checkoutService.calculateTotal(cart);
-                    log.info("Calculation successful for cart {}: {}", cartId, total);
-                    return ResponseEntity.ok(total);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BigDecimal> getTotal(@PathVariable UUID cartId) {
+        Cart cart = cartService.getCartById(cartId);
+        return ResponseEntity.ok(checkoutService.calculateTotal(cart));
     }
 }

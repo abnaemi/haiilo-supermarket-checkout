@@ -1,6 +1,8 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,11 +19,15 @@ public class CartItem {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity;
 
     public CartItem(Cart cart, Product product, int quantity) {
