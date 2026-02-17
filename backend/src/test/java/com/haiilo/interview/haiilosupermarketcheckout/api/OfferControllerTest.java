@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OfferRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
-import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.service.OfferService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;

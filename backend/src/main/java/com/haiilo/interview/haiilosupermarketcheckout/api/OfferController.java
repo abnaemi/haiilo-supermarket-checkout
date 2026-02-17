@@ -2,7 +2,6 @@ package com.haiilo.interview.haiilosupermarketcheckout.api;
 
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OfferRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO;
-import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.service.OfferService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

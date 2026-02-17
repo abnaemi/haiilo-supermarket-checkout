@@ -62,7 +62,7 @@ public class OfferServiceImpl implements OfferService {
         log.debug("Fetching all active weekly offers and mapping to DTO");
         return offerRepository.findAll().stream()
                 .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private WeeklyOfferDTO mapToDTO(WeeklyOffer offer) {
