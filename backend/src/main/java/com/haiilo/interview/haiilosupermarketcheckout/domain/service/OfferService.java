@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OfferService {
-    // Geändert von WeeklyOffer zu WeeklyOfferDTO
     WeeklyOfferDTO createOrUpdateOffer(OfferRequestDTO request);
 
     void deleteOffer(UUID offerId);

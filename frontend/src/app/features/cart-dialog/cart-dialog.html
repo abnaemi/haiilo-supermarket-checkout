@@ -12,8 +12,10 @@
           <div matListItemTitle>
             <strong>{{ item.name }}</strong>
             @if (isOfferActive(item)) {
-              <span class="offer-badge">Offer applied!</span>
-            }
+              <span class="offer-tag">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">local_offer</mat-icon>
+                  Offer Applied
+                </span>            }
           </div>
 
           <div matListItemLine>

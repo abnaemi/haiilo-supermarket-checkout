@@ -7,9 +7,7 @@
     <button mat-icon-button (click)="openCart()" aria-label="View shopping cart">
       <mat-icon [matBadge]="cartService.count()"
                 matBadgeColor="accent"
-                [matBadgeHidden]="cartService.count() === 0"
-                aria-hidden="false"
-                aria-label="Items in cart">
+                [matBadgeHidden]="cartService.count() === 0">
         shopping_cart
       </mat-icon>
     </button>
@@ -26,17 +24,36 @@
 
         <mat-card-header>
           <mat-card-title>{{ product.name }}</mat-card-title>
-          <mat-card-subtitle>Category: Groceries</mat-card-subtitle>
+          <mat-card-subtitle>Groceries</mat-card-subtitle>
         </mat-card-header>
 
         <mat-card-content>
           <p class="price-tag">
             {{ product.price | currency:'EUR' }}
           </p>
+
+          <mat-form-field appearance="outline" style="width: 100%; margin-top: 1rem;">
+            <mat-label>Quantity</mat-label>
+            <input matInput
+                   type="number"
+                   [(ngModel)]="quantities[product.id]"
+                   min="1"
+                   max="99">
+
+            <mat-hint align="start">Max. 99 items</mat-hint>
+
+            @if (quantities[product.id] > 99) {
+              <mat-error>Too many items!</mat-error>
+            }
+          </mat-form-field>
         </mat-card-content>
 
-        <mat-card-actions align="end">
-          <button mat-flat-button color="accent" (click)="addToCart(product)">
+        <mat-card-actions>
+          <button mat-flat-button
+                  color="accent"
+                  style="width: 100%; padding: 20px 0;"
+                  (click)="addToCart(product)"
+                  [disabled]="quantities[product.id] > 99 || quantities[product.id] < 1 || !quantities[product.id]">
             <mat-icon>add_shopping_cart</mat-icon>
             Add to Cart
           </button>

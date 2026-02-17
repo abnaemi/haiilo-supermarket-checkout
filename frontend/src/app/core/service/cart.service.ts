@@ -44,15 +44,18 @@ export class CartService {
     }, 0);
   });
 
-  addToCart(product: Product) {
+  addToCart(product: Product, quantity: number) {
     this.cartItems.update(items => {
-      const index = items.findIndex(i => i.id === product.id);
+      const index = items.findIndex(i => String(i.id) === String(product.id));
+
       if (index > -1) {
         const updated = [...items];
-        updated[index] = { ...updated[index], quantity: updated[index].quantity + 1 };
+        const newQty = updated[index].quantity + quantity;
+        updated[index] = { ...updated[index], quantity: newQty > 99 ? 99 : newQty };
         return updated;
       }
-      return [...items, { ...product, quantity: 1 }];
+
+      return [...items, { ...product, quantity: quantity }];
     });
   }
 

@@ -34,7 +34,6 @@ public class OfferServiceImpl implements OfferService {
                 .ifPresent(existingOffer -> {
                     log.debug("Removing existing offer {} to replace it", existingOffer.getId());
                     offerRepository.delete(existingOffer);
-                    // Flush sicherstellen, damit der Unique Constraint (falls vorhanden) nicht knallt
                     offerRepository.flush();
                 });
 
@@ -66,7 +65,6 @@ public class OfferServiceImpl implements OfferService {
                 .collect(Collectors.toList());
     }
 
-    // Hilfsmethode zur Vermeidung von LazyLoading- und Recursion-Problemen
     private WeeklyOfferDTO mapToDTO(WeeklyOffer offer) {
         return new WeeklyOfferDTO(
                 offer.getId(),

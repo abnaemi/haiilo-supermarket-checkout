@@ -24,7 +24,7 @@ public class WeeklyOffer {
     @NotNull(message = "Product reference is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Verhindert Proxy-Fehler
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Product product;
 
     @Min(value = 2, message = "Offer must require at least 2 items")
