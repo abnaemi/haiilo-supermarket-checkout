@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {Product} from '../../core/models/Product';
+import {Product} from '../../core/models/product';
 
 @Component({
   selector: 'app-product-card',

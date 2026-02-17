@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { OfferService, WeeklyOffer } from './offer.service';
 import { OrderService } from './order.service';
 import { CartItem } from '../models/cart-item.model';
-import { Product } from '../models/Product';
-import {CartCalculator} from '../utis/CartCalculator';
+import { Product } from '../models/product';
+import {CartCalculator} from '../utils/CartCalculator';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {

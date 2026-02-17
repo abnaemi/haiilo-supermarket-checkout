@@ -8,7 +8,7 @@ import {CartService} from '../../core/service/cart.service';
 import {CartItem} from '../../core/models/cart-item.model';
 import {ConfirmDialog} from '../confirm-dialog/confirm-dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {CartCalculator} from '../../core/utis/CartCalculator';
+import {CartCalculator} from '../../core/utils/CartCalculator';
 
 @Component({
   selector: 'app-cart-dialog',

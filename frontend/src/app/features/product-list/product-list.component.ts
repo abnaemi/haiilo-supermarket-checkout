@@ -7,7 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { PRODUCT_IMAGES } from '../../core/config/product-images';
-import { Product } from '../../core/models/Product';
+import { Product } from '../../core/models/product';
 import { CartService } from '../../core/service/cart.service';
 import { ProductService } from '../../core/service/product.service';
 import { CartDialog } from '../cart-dialog/cart-dialog';
