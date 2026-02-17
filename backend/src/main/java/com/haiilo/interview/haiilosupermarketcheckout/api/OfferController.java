@@ -12,6 +12,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/offers")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class OfferController {
     private final OfferService offerService;
 

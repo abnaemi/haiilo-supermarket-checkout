@@ -15,6 +15,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class CartController {
 
     private final CartService cartService;
