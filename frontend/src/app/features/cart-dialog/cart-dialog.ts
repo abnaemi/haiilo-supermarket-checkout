@@ -8,6 +8,7 @@ import {CartService} from '../../core/service/cart.service';
 import {CartItem} from '../../core/models/cart-item.model';
 import {ConfirmDialog} from '../confirm-dialog/confirm-dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {CartCalculator} from '../../core/utis/CartCalculator';
 
 @Component({
   selector: 'app-cart-dialog',
@@ -23,19 +24,18 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   styleUrl: './cart-dialog.scss'
 })
 export class CartDialog {
-
   public cartService = inject(CartService);
   private dialogRef = inject(MatDialogRef<CartDialog>);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
   checkout() {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
+    const confirmRef = this.dialog.open(ConfirmDialog, {
       width: '350px',
       data: { total: this.cartService.totalPrice() }
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    confirmRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.performCheckout();
       }
@@ -44,22 +44,18 @@ export class CartDialog {
 
   private performCheckout() {
     this.cartService.checkout().subscribe({
-      next: (response) => {
-        console.log('Order saved successfully', response);
-
+      next: () => {
         this.cartService.clearCart();
-
         this.dialogRef.close();
 
-        this.snackBar.open('🚀 Order placed and saved in Database!', 'Great!', {
+        this.snackBar.open('🚀 Order placed successfully!', 'Great', {
           duration: 5000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          panelClass: ['success-snackbar']
         });
       },
       error: (err) => {
         console.error('Checkout failed', err);
-        this.snackBar.open('❌ Error: Could not save order. Is the Backend running?', 'Close', {
+        this.snackBar.open('❌ Order failed. Please try again.', 'Close', {
           duration: 5000
         });
       }
@@ -67,26 +63,12 @@ export class CartDialog {
   }
 
   isOfferActive(item: CartItem): boolean {
-    const offers = this.cartService['weeklyOffers']();
-    if (!offers) return false;
-
-    const offer = offers.find((o: any) => String(o.productId) === String(item.id));
-
+    const offers = this.cartService.weeklyOffers();
+    const offer = offers.find(o => String(o.productId) === String(item.id));
     return !!offer && item.quantity >= offer.requiredQuantity;
   }
 
   calculateSubtotal(item: CartItem): number {
-    const offers = this.cartService['weeklyOffers']();
-
-    const offer = offers?.find((o: any) => String(o.productId) === String(item.id));
-
-    if (offer && item.quantity >= offer.requiredQuantity) {
-      const bundlePrice = offer.offerPrice;
-      const extraItems = item.quantity - offer.requiredQuantity;
-      return bundlePrice + (extraItems * item.price);
-    }
-
-    return item.quantity * item.price;
+    return CartCalculator.calculateItemSubtotal(item, this.cartService.weeklyOffers());
   }
-
 }
