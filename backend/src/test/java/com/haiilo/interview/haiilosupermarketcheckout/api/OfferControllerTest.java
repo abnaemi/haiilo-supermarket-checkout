@@ -67,7 +67,6 @@ class OfferControllerTest {
 
     @Test
     void createOffer_ShouldReturnBadRequest_WhenValidationFails() throws Exception {
-        //noinspection ConstantConditions
         OfferRequestDTO invalidRequest = new OfferRequestDTO(productId, 1, BigDecimal.valueOf(0.45));
 
         mockMvc.perform(post("/api/v1/offers")

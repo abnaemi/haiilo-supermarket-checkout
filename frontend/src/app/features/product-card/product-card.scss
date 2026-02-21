@@ -1,5 +1,4 @@
 .product-card {
-  height: 100%;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -40,6 +39,12 @@
       margin: 0;
     }
 
+    .offer-container {
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+    }
+
     .offer-info {
       color: #2e7d32;
       font-weight: 600;
@@ -55,10 +60,6 @@
         height: 18px;
       }
     }
-  }
-
-  mat-card-content {
-    flex-grow: 1; // Drückt die Actions immer nach unten
   }
 
   .w-full {

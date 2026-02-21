@@ -1,11 +1,17 @@
-import {CartItem} from '../models/cart-item.model';
-import {WeeklyOffer} from '../service/offer.service';
+import { CartItem } from '../models/cart-item.model';
+import { WeeklyOffer } from '../models/weekly-offer.model';
 
 export class CartCalculator {
+
+  static isOfferActive(item: CartItem, offers: WeeklyOffer[]): boolean {
+    const offer = offers.find(o => String(o.productId) === String(item.id));
+    return !!offer && item.quantity >= offer.requiredQuantity;
+  }
+
   static calculateItemSubtotal(item: CartItem, offers: WeeklyOffer[]): number {
     const offer = offers.find(o => String(o.productId) === String(item.id));
 
-    if (offer && item.quantity >= offer.requiredQuantity) {
+    if (this.isOfferActive(item, offers) && offer) {
       const priceForOfferBundle = offer.offerPrice;
       const remainingQuantity = item.quantity - offer.requiredQuantity;
       return priceForOfferBundle + (remainingQuantity * item.price);

@@ -22,7 +22,9 @@ public class Order {
     private UUID id;
 
     private LocalDateTime orderDate = LocalDateTime.now();
-    private BigDecimal totalAmount;
+    private BigDecimal totalOriginalPrice;
+    private BigDecimal totalDiscountAmount;
+    private BigDecimal finalTotalPrice;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id")
