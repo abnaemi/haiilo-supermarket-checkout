@@ -1,5 +1,4 @@
 .product-card {
-  height: 100%;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -55,10 +54,6 @@
         height: 18px;
       }
     }
-  }
-
-  mat-card-content {
-    flex-grow: 1; // Drückt die Actions immer nach unten
   }
 
   .w-full {

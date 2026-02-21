@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,11 +8,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { PRODUCT_IMAGES } from '../../core/config/product-images';
 import { Product } from '../../core/models/product';
-import { CartService } from '../../core/service/cart.service';
-import { ProductService } from '../../core/service/product.service';
 import { CartDialog } from '../cart-dialog/cart-dialog';
-import {ProductCardComponent} from '../product-card/product-card';
-
+import { ProductCardComponent } from '../product-card/product-card';
+import { OfferInfoPipe } from '../../core/pipes/offer-info.pipe';
+import { CartState } from '../../core/state/cart.state';
+import { AdminPanelComponent } from '../admin-panel/admin-panel.component';
+import { ProductState } from '../../core/state/product.state';
+import { OfferState } from '../../core/state/offer.state';
 
 @Component({
   selector: 'app-product-list',
@@ -26,36 +28,21 @@ import {ProductCardComponent} from '../product-card/product-card';
     MatDialogModule,
     MatButtonModule,
     ProductCardComponent,
+    OfferInfoPipe,
+    AdminPanelComponent
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent implements OnInit {
-  private productService = inject(ProductService);
-  public cartService = inject(CartService);
+export class ProductListComponent {
+  protected productState = inject(ProductState);
+  protected cartState = inject(CartState);
+  protected offerState = inject(OfferState);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
-  products: Product[] = [];
-
-  ngOnInit(): void {
-    this.loadProducts();
-  }
-
-  loadProducts(): void {
-    this.productService.getProducts().subscribe({
-      next: (data) => {
-        this.products = data;
-      },
-      error: (err) => {
-        console.error('Connection to Backend failed:', err);
-        this.snackBar.open('Backend not reachable!', 'Close', { duration: 5000 });
-      }
-    });
-  }
-
   onAddToCart(event: { product: Product, quantity: number }): void {
-    this.cartService.addToCart(event.product, event.quantity);
+    this.cartState.addToCart(event.product, event.quantity);
 
     this.snackBar.open(`${event.quantity}x ${event.product.name} added to cart!`, 'Close', {
       duration: 2000,
@@ -72,14 +59,11 @@ export class ProductListComponent implements OnInit {
   }
 
   getProductImage(name: string): string {
-    return PRODUCT_IMAGES[name] || PRODUCT_IMAGES['Default'];
-  }
-
-  getOfferInfo(productId: string): string | null {
-    const offer = this.cartService.weeklyOffers().find(o => String(o.productId) === String(productId));
-    if (offer) {
-      return `Special Offer: ${offer.requiredQuantity} for ${offer.offerPrice.toFixed(2)} €`;
+    const imageUrl = PRODUCT_IMAGES[name];
+    if (!imageUrl) {
+      console.warn(`No image found for product: "${name}". Using default image.`);
+      return PRODUCT_IMAGES['Default'];
     }
-    return null;
+    return imageUrl;
   }
 }

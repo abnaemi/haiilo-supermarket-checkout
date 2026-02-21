@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import {CartService} from '../../core/service/cart.service';
-import {CartItem} from '../../core/models/cart-item.model';
-import {ConfirmDialog} from '../confirm-dialog/confirm-dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {CartCalculator} from '../../core/utils/CartCalculator';
+import { CartState } from '../../core/state/cart.state';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CartCalculator } from '../../core/utils/CartCalculator';
+import { OfferState } from '../../core/state/offer.state';
 
 @Component({
   selector: 'app-cart-dialog',
@@ -24,15 +24,18 @@ import {CartCalculator} from '../../core/utils/CartCalculator';
   styleUrl: './cart-dialog.scss'
 })
 export class CartDialog {
-  public cartService = inject(CartService);
+  protected cartState = inject(CartState);
+  protected offerState = inject(OfferState);
   private dialogRef = inject(MatDialogRef<CartDialog>);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
+  protected readonly CartCalculator = CartCalculator;
+
   checkout() {
     const confirmRef = this.dialog.open(ConfirmDialog, {
       width: '350px',
-      data: { total: this.cartService.totalPrice() }
+      data: { total: this.cartState.totalPrice() }
     });
 
     confirmRef.afterClosed().subscribe(confirmed => {
@@ -43,9 +46,9 @@ export class CartDialog {
   }
 
   private performCheckout() {
-    this.cartService.checkout().subscribe({
+    this.cartState.checkout().subscribe({
       next: () => {
-        this.cartService.clearCart();
+        this.cartState.clearCart();
         this.dialogRef.close();
 
         this.snackBar.open('🚀 Order placed successfully!', 'Great', {
@@ -53,22 +56,7 @@ export class CartDialog {
           panelClass: ['success-snackbar']
         });
       },
-      error: (err) => {
-        console.error('Checkout failed', err);
-        this.snackBar.open('❌ Order failed. Please try again.', 'Close', {
-          duration: 5000
-        });
-      }
+      // Generic errors are now handled by the HttpErrorInterceptor
     });
-  }
-
-  isOfferActive(item: CartItem): boolean {
-    const offers = this.cartService.weeklyOffers();
-    const offer = offers.find(o => String(o.productId) === String(item.id));
-    return !!offer && item.quantity >= offer.requiredQuantity;
-  }
-
-  calculateSubtotal(item: CartItem): number {
-    return CartCalculator.calculateItemSubtotal(item, this.cartService.weeklyOffers());
   }
 }

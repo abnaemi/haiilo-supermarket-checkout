@@ -32,7 +32,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("POST /api/v1/orders should return 201 Created and the saved order")
     void shouldCreateOrder() throws Exception {
-        // GIVEN
+
         Order inputOrder = new Order();
         inputOrder.setTotalAmount(new BigDecimal("10.00"));
 
@@ -42,7 +42,6 @@ class OrderControllerTest {
 
         when(orderService.saveOrder(any(Order.class))).thenReturn(savedOrder);
 
-        // WHEN & THEN
         mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputOrder)))

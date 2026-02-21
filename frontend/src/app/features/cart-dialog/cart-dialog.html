@@ -1,17 +1,17 @@
 <h2 mat-dialog-title>Your Shopping Cart</h2>
 
 <mat-dialog-content>
-  @if (cartService.items().length === 0) {
+  @if (cartState.items().length === 0) {
     <p>Your cart is empty.</p>
   } @else {
     <mat-list>
-      @for (item of cartService.items(); track item.id) {
+      @for (item of cartState.items(); track item.id) {
         <mat-list-item>
           <mat-icon matListItemIcon>shopping_basket</mat-icon>
 
           <div matListItemTitle>
             <strong>{{ item.name }}</strong>
-            @if (isOfferActive(item)) {
+            @if (CartCalculator.isOfferActive(item, offerState.offers())) {
               <span class="offer-tag">
                   <mat-icon style="font-size: 14px; width: 14px; height: 14px;">local_offer</mat-icon>
                   Offer Applied
@@ -23,18 +23,18 @@
           </div>
 
           <div matListItemMeta class="quantity-controls">
-            <button mat-icon-button color="warn" (click)="cartService.updateQuantity(item.id, -1)">
+            <button mat-icon-button color="warn" (click)="cartState.updateQuantity(item.id, -1)">
               <mat-icon>remove_circle_outline</mat-icon>
             </button>
 
             <span class="quantity-value">{{ item.quantity }}</span>
 
-            <button mat-icon-button color="primary" (click)="cartService.updateQuantity(item.id, 1)">
+            <button mat-icon-button color="primary" (click)="cartState.updateQuantity(item.id, 1)">
               <mat-icon>add_circle_outline</mat-icon>
             </button>
 
             <span class="item-total">
-              {{ calculateSubtotal(item) | currency:'EUR' }}
+              {{ CartCalculator.calculateItemSubtotal(item, offerState.offers()) | currency:'EUR' }}
             </span>
           </div>
         </mat-list-item>
@@ -42,14 +42,14 @@
     </mat-list>
 
     <div class="total-section">
-      <h3>Total Amount: {{ cartService.totalPrice() | currency:'EUR' }}</h3>
+      <h3>Total Amount: {{ cartState.totalPrice() | currency:'EUR' }}</h3>
     </div>
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Continue Shopping</button>
-  <button mat-flat-button color="primary" (click)="checkout()" [disabled]="cartService.items().length === 0">
+  <button mat-flat-button color="primary" (click)="checkout()" [disabled]="cartState.items().length === 0">
     Order Now
   </button>
 </mat-dialog-actions>

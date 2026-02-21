@@ -1,30 +1,36 @@
-<div class="shop-container">
-  <mat-toolbar color="primary" class="mat-elevation-z4">
-    <mat-icon class="mr-2">storefront</mat-icon>
-    <span>Haiilo Supermarket</span>
-    <span class="spacer"></span>
+<div class="page-layout">
+  <div class="shop-container">
+    <mat-toolbar color="primary" class="mat-elevation-z4">
+      <mat-icon class="mr-2">storefront</mat-icon>
+      <span>Haiilo Supermarket</span>
+      <span class="spacer"></span>
 
-    <button mat-icon-button (click)="openCart()" aria-label="View shopping cart">
-      <mat-icon [matBadge]="cartService.count()"
-                matBadgeColor="accent"
-                [matBadgeHidden]="cartService.count() === 0">
-        shopping_cart
-      </mat-icon>
-    </button>
-  </mat-toolbar>
+      <button mat-icon-button (click)="openCart()" aria-label="View shopping cart">
+        <mat-icon [matBadge]="cartState.count()"
+                  matBadgeColor="accent"
+                  [matBadgeHidden]="cartState.count() === 0">
+          shopping_cart
+        </mat-icon>
+      </button>
+    </mat-toolbar>
 
-  <main class="product-grid">
-    @for (product of products; track product.id) {
-      <app-product-card
-        [product]="product"
-        [image]="getProductImage(product.name)"
-        [offerInfo]="getOfferInfo(product.id)"
-        (addToCart)="onAddToCart($event)">
-      </app-product-card>
-    } @empty {
-      <div class="loading-state">
-        <p>No products found. Please check your Server connection.</p>
-      </div>
-    }
-  </main>
+    <main class="product-grid">
+      @for (product of productState.products(); track product.id) {
+        <app-product-card
+          [product]="product"
+          [image]="getProductImage(product.name)"
+          [offerInfo]="product.id | offerInfo:offerState.offers()"
+          (addToCart)="onAddToCart($event)">
+        </app-product-card>
+      } @empty {
+        <div class="loading-state">
+          <p>No products found. Please check your Server connection.</p>
+        </div>
+      }
+    </main>
+  </div>
+
+  <aside class="admin-panel-container">
+    <app-admin-panel></app-admin-panel>
+  </aside>
 </div>
