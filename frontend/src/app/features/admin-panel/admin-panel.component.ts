@@ -7,11 +7,13 @@ import { CreateOfferDto } from '../../core/models/create-offer.dto';
 import { MatLabel } from '@angular/material/input';
 import { ProductState } from '../../core/state/product.state';
 import { OfferState } from '../../core/state/offer.state';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatLabel],
+  imports: [CommonModule, FormsModule, MatLabel, MatDialogModule, ConfirmationDialogComponent],
   templateUrl: './admin-panel.component.html',
   styleUrls: ['./admin-panel.component.scss']
 })
@@ -21,6 +23,7 @@ export class AdminPanelComponent {
 
   private productService = inject(ProductService);
   private offerService = inject(OfferService);
+  private dialog = inject(MatDialog);
 
   protected showProductPopup = signal(false);
   protected showOfferPopup = signal(false);
@@ -47,17 +50,26 @@ export class AdminPanelComponent {
   }
 
   deleteProduct(id: string): void {
-    if (confirm('Delete Product?')) {
-      this.productService.deleteProduct(id).subscribe({
-        next: () => this.productState.refresh(),
-        error: (err) => {
-          if (err.status === 409) {
-            this.errorMessage.set("Can't delete: Product is used in a weekly offer.");
-            setTimeout(() => this.errorMessage.set(null), 5000);
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { title: 'Archive Product', message: 'Are you sure you want to archive this product? This will also archive all associated weekly offers.' },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.productService.deleteProduct(id).subscribe({
+          next: () => {
+            this.productState.refresh();
+            this.offerState.refresh();
+          },
+          error: (err) => {
+            if (err.status === 409) {
+              this.errorMessage.set("Can't delete: Product is used in a weekly offer.");
+              setTimeout(() => this.errorMessage.set(null), 5000);
+            }
           }
-        }
-      });
-    }
+        });
+      }
+    });
   }
 
   saveOffer(): void {
@@ -73,10 +85,16 @@ export class AdminPanelComponent {
   }
 
   deleteOffer(id: string): void {
-    if (confirm('Delete Offer?')) {
-      this.offerService.deleteOffer(id).subscribe({
-        next: () => this.offerState.refresh(),
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { title: 'Archive Offer', message: 'Are you sure you want to archive this offer?' },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.offerService.deleteOffer(id).subscribe({
+          next: () => this.offerState.refresh(),
+        });
+      }
+    });
   }
 }

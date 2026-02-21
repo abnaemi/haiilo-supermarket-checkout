@@ -27,6 +27,8 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    private boolean isArchived = false;
+
     public Product(String name, BigDecimal price) {
         this.name = name;
         this.price = price;

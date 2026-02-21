@@ -1,7 +1,7 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.service;
 
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OfferRequestDTO;
-import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO; // Neu
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.WeeklyOfferDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
 import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.WeeklyOfferRepository;
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,11 +29,11 @@ public class OfferServiceImpl implements OfferService {
 
         Product product = productService.getProductEntityById(request.productId());
 
-        offerRepository.findFirstByProductId(product.getId())
+        offerRepository.findFirstByProductIdAndIsArchivedFalse(product.getId())
                 .ifPresent(existingOffer -> {
-                    log.debug("Removing existing offer {} to replace it", existingOffer.getId());
-                    offerRepository.delete(existingOffer);
-                    offerRepository.flush();
+                    log.debug("Archiving existing offer {} to replace it", existingOffer.getId());
+                    existingOffer.setArchived(true);
+                    offerRepository.save(existingOffer);
                 });
 
         WeeklyOffer newOffer = new WeeklyOffer(product, request.requiredQuantity(), request.offerPrice());
@@ -48,19 +47,18 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public void deleteOffer(UUID offerId) {
-        log.info("Attempting to delete offer: {}", offerId);
-        if (!offerRepository.existsById(offerId)) {
-            log.warn("Delete failed: Offer {} not found", offerId);
-            throw new EntityNotFoundException("Offer not found: " + offerId);
-        }
-        offerRepository.deleteById(offerId);
+        log.info("Attempting to archive offer: {}", offerId);
+        WeeklyOffer offer = offerRepository.findById(offerId)
+                .orElseThrow(() -> new EntityNotFoundException("Offer not found: " + offerId));
+        offer.setArchived(true);
+        offerRepository.save(offer);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<WeeklyOfferDTO> getAllOffers() {
         log.debug("Fetching all active weekly offers and mapping to DTO");
-        return offerRepository.findAll().stream()
+        return offerRepository.findAllByIsArchivedFalse().stream()
                 .map(this::mapToDTO)
                 .toList();
     }

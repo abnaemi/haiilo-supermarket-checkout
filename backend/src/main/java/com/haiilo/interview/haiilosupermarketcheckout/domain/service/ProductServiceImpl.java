@@ -4,6 +4,7 @@ import com.haiilo.interview.haiilosupermarketcheckout.api.dto.ProductRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.ProductResponseDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.ProductRepository;
+import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.WeeklyOfferRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +20,19 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final WeeklyOfferRepository weeklyOfferRepository;
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {
-        log.debug("Fetching all products");
-        return productRepository.findAll().stream()
+        log.debug("Fetching all active products");
+        return productRepository.findAllByIsArchivedFalse().stream()
                 .map(p -> new ProductResponseDTO(p.getId(), p.getName(), p.getPrice()))
                 .toList();
     }
 
     @Override
     public Product getProductEntityById(UUID id) {
-        return productRepository.findById(id)
+        return productRepository.findByIdAndIsArchivedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
     }
 
@@ -49,14 +51,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProduct(UUID id) {
-        log.info("Attempting to delete product with ID: {}", id);
+        log.info("Attempting to archive product with ID: {}", id);
 
-        if (!productRepository.existsById(id)) {
-            log.warn("Deletion failed: Product with ID {} not found", id);
-            throw new EntityNotFoundException("Product not found with ID: " + id);
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
 
-        productRepository.deleteById(id);
-        log.info("Product with ID {} successfully deleted", id);
+        product.setArchived(true);
+        productRepository.save(product);
+        log.info("Product with ID {} successfully archived", id);
+
+        weeklyOfferRepository.findAllByProductId(id).forEach(offer -> {
+            offer.setArchived(true);
+            weeklyOfferRepository.save(offer);
+            log.info("Cascaded archive to weekly offer with ID {}", offer.getId());
+        });
     }
 }

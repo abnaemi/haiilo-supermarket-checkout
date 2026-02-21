@@ -34,6 +34,8 @@ public class WeeklyOffer {
     @DecimalMin(value = "0.00", message = "Offer price cannot be negative")
     private BigDecimal offerPrice;
 
+    private boolean isArchived = false;
+
     public WeeklyOffer(Product product, int requiredQuantity, BigDecimal offerPrice) {
         this.product = product;
         this.requiredQuantity = requiredQuantity;

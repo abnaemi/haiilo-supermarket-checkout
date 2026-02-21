@@ -3,8 +3,12 @@ package com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistenc
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
+    List<Product> findAllByIsArchivedFalse();
+    Optional<Product> findByIdAndIsArchivedFalse(UUID id);
 }

@@ -27,7 +27,7 @@
             <span class="item-sub">{{ p.price | currency:'EUR' }}</span>
             <small class="id-hint">ID: {{ p.id.substring(0,8) }}...</small>
           </div>
-          <button class="del-btn" (click)="deleteProduct(p.id)">🗑️</button>
+          <button class="del-btn" (click)="deleteProduct(p.id)">Archivieren</button>
         </li>
       }
     </ul>
@@ -46,7 +46,7 @@
             <span class="item-name">Offer for {{ o.productId.substring(0,8) }}...</span>
             <span class="item-sub">{{ o.requiredQuantity }} pcs for {{ o.offerPrice | currency:'EUR' }}</span>
           </div>
-          <button class="del-btn" (click)="deleteOffer(o.id)">🗑️</button>
+          <button class="del-btn" (click)="deleteOffer(o.id)">Archivieren</button>
         </li>
       }
     </ul>
