@@ -13,7 +13,7 @@ export class CartState {
 
   private cartItems = signal<CartItem[]>([]);
 
-  weeklyOffers = this.offerState.offers;
+  private weeklyOffers = this.offerState.offers;
   public readonly items = this.cartItems.asReadonly();
 
   public readonly count = computed(() => this.cartItems().reduce((s, i) => s + i.quantity, 0));
@@ -51,6 +51,6 @@ export class CartState {
   }
 
   checkout(): Observable<any> {
-    return this.orderService.placeOrder(this.totalPrice(), this.cartItems());
+    return this.orderService.placeOrder(this.cartItems());
   }
 }

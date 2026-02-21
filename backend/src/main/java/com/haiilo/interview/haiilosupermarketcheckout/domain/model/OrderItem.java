@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,8 +20,17 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     private UUID productId;
     private String productName;
     private Integer quantity;
-    private BigDecimal priceAtPurchase;
+
+    private BigDecimal originalPrice;
+    private BigDecimal totalOriginalPrice;
+
+    @ManyToOne
+    private WeeklyOffer appliedOffer;
+
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+    private BigDecimal finalPrice;
 }
