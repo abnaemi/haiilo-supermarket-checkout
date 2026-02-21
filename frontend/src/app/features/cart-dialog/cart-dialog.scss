@@ -1,25 +1,46 @@
+.total-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  text-align: right;
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+}
+
 .quantity-controls {
   display: flex;
   align-items: center;
   gap: 8px;
-
-  .quantity-label {
-    font-weight: bold;
-    min-width: 20px;
-    text-align: center;
-  }
-
-  .item-total {
-    margin-left: 16px;
-    font-weight: 500;
-    min-width: 70px;
-    text-align: right;
-  }
 }
 
-.total-section {
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 2px solid #eee;
+.quantity-value {
+  font-weight: 500;
+  min-width: 20px;
+  text-align: center;
+}
+
+.item-total {
+  font-weight: bold;
+  min-width: 70px;
   text-align: right;
+}
+
+.offer-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #e8f5e9; // Light green
+  color: #2e7d32; // Dark green
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.delete-button {
+  margin-left: 16px;
 }

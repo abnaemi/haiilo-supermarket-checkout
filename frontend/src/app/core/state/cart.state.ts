@@ -15,9 +15,7 @@ export class CartState {
 
   private weeklyOffers = this.offerState.offers;
   public readonly items = this.cartItems.asReadonly();
-
   public readonly count = computed(() => this.cartItems().reduce((s, i) => s + i.quantity, 0));
-
   public readonly totalPrice = computed(() => {
     return this.cartItems().reduce((total, item) => {
       return total + CartCalculator.calculateItemSubtotal(item, this.weeklyOffers());
@@ -27,23 +25,32 @@ export class CartState {
   addToCart(product: Product, quantity: number) {
     this.cartItems.update(items => {
       const index = items.findIndex(i => String(i.id) === String(product.id));
-
       if (index > -1) {
         const updated = [...items];
         const newQty = updated[index].quantity + quantity;
         updated[index] = { ...updated[index], quantity: Math.min(newQty, 99) };
         return updated;
       }
-
       return [...items, { ...product, quantity }];
     });
   }
 
-  updateQuantity(id: number | string, delta: number) {
-    this.cartItems.update(items => items
-      .map(i => i.id === id ? { ...i, quantity: i.quantity + delta } : i)
-      .filter(i => i.quantity > 0 && i.quantity <= 99)
+  updateQuantity(id: string, delta: number) {
+    this.cartItems.update(items =>
+      items.map(i => {
+        if (i.id === id) {
+          let newQty = i.quantity + delta;
+          if (newQty < 1) newQty = 1;
+          if (newQty > 99) newQty = 99;
+          return { ...i, quantity: newQty };
+        }
+        return i;
+      })
     );
+  }
+
+  removeFromCart(id: string) {
+    this.cartItems.update(items => items.filter(i => i.id !== id));
   }
 
   clearCart() {

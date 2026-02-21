@@ -61,7 +61,6 @@ export class ProductListComponent {
   getProductImage(name: string): string {
     const imageUrl = PRODUCT_IMAGES[name];
     if (!imageUrl) {
-      console.warn(`No image found for product: "${name}". Using default image.`);
       return PRODUCT_IMAGES['Default'];
     }
     return imageUrl;
