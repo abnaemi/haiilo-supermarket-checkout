@@ -4,6 +4,7 @@ import com.haiilo.interview.haiilosupermarketcheckout.api.dto.ProductRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.ProductResponseDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.ProductRepository;
+import com.haiilo.interview.haiilosupermarketcheckout.infrastructure.persistence.WeeklyOfferRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ class ProductServiceImplTest {
 
     @Mock
     private ProductRepository productRepository;
+    
+    @Mock
+    private WeeklyOfferRepository weeklyOfferRepository;
 
     @InjectMocks
     private ProductServiceImpl productService;
@@ -47,7 +51,7 @@ class ProductServiceImplTest {
     @Test
     void getProductEntityById_ShouldThrowException_WhenNotFound() {
         UUID id = UUID.randomUUID();
-        when(productRepository.findById(id)).thenReturn(Optional.empty());
+        when(productRepository.findByIdAndIsArchivedFalse(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> productService.getProductEntityById(id))
                 .isInstanceOf(EntityNotFoundException.class);

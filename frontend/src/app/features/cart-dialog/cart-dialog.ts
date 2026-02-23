@@ -9,6 +9,10 @@ import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CartCalculator } from '../../core/utils/CartCalculator';
 import { OfferState } from '../../core/state/offer.state';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { Customer } from '../../core/models/customer.model';
 
 @Component({
   selector: 'app-cart-dialog',
@@ -18,7 +22,10 @@ import { OfferState } from '../../core/state/offer.state';
     MatDialogModule,
     MatListModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './cart-dialog.html',
   styleUrl: './cart-dialog.scss'
@@ -29,10 +36,26 @@ export class CartDialog {
   private dialogRef = inject(MatDialogRef<CartDialog>);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private fb = inject(FormBuilder);
 
   protected readonly CartCalculator = CartCalculator;
 
+  customerForm: FormGroup = this.fb.group({
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    street: ['', Validators.required],
+    city: ['', Validators.required],
+    country: ['', Validators.required],
+    phoneNumber: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]]
+  });
+
   checkout() {
+    if (this.customerForm.invalid) {
+      this.customerForm.markAllAsTouched();
+      return;
+    }
+
     const confirmRef = this.dialog.open(ConfirmDialog, {
       width: '350px',
       data: { total: this.cartState.totalPrice() }
@@ -46,7 +69,8 @@ export class CartDialog {
   }
 
   private performCheckout() {
-    this.cartState.checkout().subscribe({
+    const customer: Customer = this.customerForm.value;
+    this.cartState.checkout(customer).subscribe({
       next: () => {
         this.cartState.clearCart();
         this.dialogRef.close();

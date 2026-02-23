@@ -1,6 +1,8 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.service;
 
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CheckoutItemRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CustomerDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OrderRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Order;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.WeeklyOffer;
@@ -45,20 +47,37 @@ class OrderServiceImplTest {
         checkoutItem.setQuantity(3);
         List<CheckoutItemRequestDTO> checkoutItems = Collections.singletonList(checkoutItem);
 
-        Product product = new Product("Apple", new BigDecimal("0.90"));
+        CustomerDTO customer = new CustomerDTO();
+        customer.setFirstName("John");
+        customer.setLastName("Doe");
+        customer.setStreet("123 Main St");
+        customer.setCity("New York");
+        customer.setCountry("USA");
+        customer.setPhoneNumber("+1 555 1234");
+        customer.setEmail("john.doe@example.com");
+
+        OrderRequestDTO orderRequest = new OrderRequestDTO();
+        orderRequest.setItems(checkoutItems);
+        orderRequest.setCustomer(customer);
+
+        Product product = new Product();
+        product.setName("Apple");
+        product.setPrice(new BigDecimal("0.90"));
         product.setId(productId);
 
         when(productRepository.findAllById(any(List.class))).thenReturn(Collections.singletonList(product));
         when(weeklyOfferRepository.findAll()).thenReturn(Collections.emptyList()); // No offers in this test
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0)); // Return the same order that was passed to save
 
-        Order result = orderService.placeOrder(checkoutItems);
+        Order result = orderService.placeOrder(orderRequest);
 
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
         assertEquals(new BigDecimal("2.70"), result.getTotalOriginalPrice());
         assertEquals(BigDecimal.ZERO, result.getTotalDiscountAmount());
         assertEquals(new BigDecimal("2.70"), result.getFinalTotalPrice());
+        assertNotNull(result.getCustomer());
+        assertEquals("John", result.getCustomer().getFirstName());
 
         verify(productRepository, times(1)).findAllById(any(List.class));
         verify(weeklyOfferRepository, times(1)).findAll();
@@ -74,22 +93,41 @@ class OrderServiceImplTest {
         checkoutItem.setQuantity(3); // 3 items, offer is for 2
         List<CheckoutItemRequestDTO> checkoutItems = Collections.singletonList(checkoutItem);
 
-        Product product = new Product("Apple", new BigDecimal("0.90"));
+        CustomerDTO customer = new CustomerDTO();
+        customer.setFirstName("John");
+        customer.setLastName("Doe");
+        customer.setStreet("123 Main St");
+        customer.setCity("New York");
+        customer.setCountry("USA");
+        customer.setPhoneNumber("+1 555 1234");
+        customer.setEmail("john.doe@example.com");
+
+        OrderRequestDTO orderRequest = new OrderRequestDTO();
+        orderRequest.setItems(checkoutItems);
+        orderRequest.setCustomer(customer);
+
+        Product product = new Product();
+        product.setName("Apple");
+        product.setPrice(new BigDecimal("0.90"));
         product.setId(productId);
 
-        WeeklyOffer offer = new WeeklyOffer(product, 2, new BigDecimal("1.00"));
+        WeeklyOffer offer = new WeeklyOffer();
+        offer.setProduct(product);
+        offer.setRequiredQuantity(2);
+        offer.setOfferPrice(new BigDecimal("1.00"));
 
         when(productRepository.findAllById(any(List.class))).thenReturn(Collections.singletonList(product));
         when(weeklyOfferRepository.findAll()).thenReturn(Collections.singletonList(offer));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Order result = orderService.placeOrder(checkoutItems);
+        Order result = orderService.placeOrder(orderRequest);
 
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
         assertEquals(new BigDecimal("2.70"), result.getTotalOriginalPrice());
         assertEquals(new BigDecimal("1.90"), result.getFinalTotalPrice());
         assertEquals(new BigDecimal("0.80"), result.getTotalDiscountAmount());
+        assertNotNull(result.getCustomer());
 
         verify(orderRepository, times(1)).save(any(Order.class));
     }

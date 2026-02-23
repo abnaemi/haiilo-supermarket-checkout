@@ -5,6 +5,7 @@ import { CartItem } from '../models/cart-item.model';
 import { Product } from '../models/product';
 import { CartCalculator } from '../utils/CartCalculator';
 import { OfferState } from './offer.state';
+import { Customer } from '../models/customer.model';
 
 @Injectable({ providedIn: 'root' })
 export class CartState {
@@ -57,7 +58,7 @@ export class CartState {
     this.cartItems.set([]);
   }
 
-  checkout(): Observable<any> {
-    return this.orderService.placeOrder(this.cartItems());
+  checkout(customer: Customer): Observable<any> {
+    return this.orderService.placeOrder(this.cartItems(), customer);
   }
 }

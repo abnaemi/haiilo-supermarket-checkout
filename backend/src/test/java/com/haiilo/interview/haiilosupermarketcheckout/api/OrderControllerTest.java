@@ -2,6 +2,8 @@ package com.haiilo.interview.haiilosupermarketcheckout.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CheckoutItemRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CustomerDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OrderRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Order;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +42,20 @@ class OrderControllerTest {
         CheckoutItemRequestDTO checkoutItem = new CheckoutItemRequestDTO();
         checkoutItem.setProductId(UUID.randomUUID());
         checkoutItem.setQuantity(2);
-        List<CheckoutItemRequestDTO> requestBody = Collections.singletonList(checkoutItem);
+        List<CheckoutItemRequestDTO> items = Collections.singletonList(checkoutItem);
+
+        CustomerDTO customer = new CustomerDTO();
+        customer.setFirstName("John");
+        customer.setLastName("Doe");
+        customer.setStreet("123 Main St");
+        customer.setCity("New York");
+        customer.setCountry("USA");
+        customer.setPhoneNumber("+1 555 1234");
+        customer.setEmail("john.doe@example.com");
+
+        OrderRequestDTO requestBody = new OrderRequestDTO();
+        requestBody.setItems(items);
+        requestBody.setCustomer(customer);
 
         Order calculatedOrder = new Order();
         calculatedOrder.setId(UUID.randomUUID());
@@ -48,7 +63,7 @@ class OrderControllerTest {
         calculatedOrder.setTotalOriginalPrice(new BigDecimal("2.00"));
         calculatedOrder.setTotalDiscountAmount(new BigDecimal("0.20"));
 
-        when(orderService.placeOrder(any(List.class))).thenReturn(calculatedOrder);
+        when(orderService.placeOrder(any(OrderRequestDTO.class))).thenReturn(calculatedOrder);
 
         mockMvc.perform(post("/api/v1/orders/checkout")
                         .contentType(MediaType.APPLICATION_JSON)

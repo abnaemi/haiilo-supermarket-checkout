@@ -26,6 +26,10 @@ public class Order {
     private BigDecimal totalDiscountAmount;
     private BigDecimal finalTotalPrice;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id")
     private List<OrderItem> items = new ArrayList<>();

@@ -1,6 +1,9 @@
 package com.haiilo.interview.haiilosupermarketcheckout.domain.service;
 
 import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CheckoutItemRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CustomerDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OrderRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Customer;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Order;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.OrderItem;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Product;
@@ -33,16 +36,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order placeOrder(List<CheckoutItemRequestDTO> checkoutItems) {
-        log.info("Processing new order request with {} items", checkoutItems.size());
+    public Order placeOrder(OrderRequestDTO orderRequest) {
+        log.info("Processing new order request with {} items", orderRequest.getItems().size());
 
-        Map<UUID, Product> productMap = getProductMap(checkoutItems);
+        Map<UUID, Product> productMap = getProductMap(orderRequest.getItems());
         List<WeeklyOffer> activeOffers = weeklyOfferRepository.findAll();
 
         Order order = new Order();
+        
+        Customer customer = mapCustomer(orderRequest.getCustomer());
+        order.setCustomer(customer);
+
         List<OrderItem> orderItems = new ArrayList<>();
 
-        for (CheckoutItemRequestDTO itemDto : checkoutItems) {
+        for (CheckoutItemRequestDTO itemDto : orderRequest.getItems()) {
             Product product = productMap.get(itemDto.getProductId());
             if (product == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid product ID: " + itemDto.getProductId());
@@ -56,6 +63,18 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
         log.info("Order successfully saved with ID: {}", savedOrder.getId());
         return savedOrder;
+    }
+
+    private Customer mapCustomer(CustomerDTO dto) {
+        Customer customer = new Customer();
+        customer.setFirstName(dto.getFirstName());
+        customer.setLastName(dto.getLastName());
+        customer.setStreet(dto.getStreet());
+        customer.setCity(dto.getCity());
+        customer.setCountry(dto.getCountry());
+        customer.setPhoneNumber(dto.getPhoneNumber());
+        customer.setEmail(dto.getEmail());
+        return customer;
     }
 
     private Map<UUID, Product> getProductMap(List<CheckoutItemRequestDTO> checkoutItems) {

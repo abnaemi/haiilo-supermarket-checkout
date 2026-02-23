@@ -1,14 +1,12 @@
 package com.haiilo.interview.haiilosupermarketcheckout.api;
 
-import com.haiilo.interview.haiilosupermarketcheckout.api.dto.CheckoutItemRequestDTO;
+import com.haiilo.interview.haiilosupermarketcheckout.api.dto.OrderRequestDTO;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.model.Order;
 import com.haiilo.interview.haiilosupermarketcheckout.domain.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -20,7 +18,7 @@ public class OrderController {
 
     @PostMapping("/checkout")
     @ResponseStatus(HttpStatus.CREATED)
-    public Order placeOrder(@RequestBody @Valid List<CheckoutItemRequestDTO> checkoutItems) {
-        return orderService.placeOrder(checkoutItems);
+    public Order placeOrder(@RequestBody @Valid OrderRequestDTO orderRequest) {
+        return orderService.placeOrder(orderRequest);
     }
 }

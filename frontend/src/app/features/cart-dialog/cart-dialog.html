@@ -1,59 +1,111 @@
-<h2 mat-dialog-title>Your Shopping Cart</h2>
-
+<h2 mat-dialog-title>Your Cart</h2>
 <mat-dialog-content>
-  @if (cartState.items().length === 0) {
-    <p>Your cart is empty.</p>
-  } @else {
-    <mat-list>
-      @for (item of cartState.items(); track item.id) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>shopping_basket</mat-icon>
+  <mat-list>
+    <mat-list-item *ngFor="let item of cartState.items()">
+      <div class="cart-item-row">
+        <div class="item-info">
+          <span class="item-name">{{ item.name }}</span>
+          <span class="offer-badge" *ngIf="CartCalculator.isOfferActive(item, offerState.offers())">
+            Offer Applied!
+          </span>
+        </div>
+        <div class="quantity-controls">
+          <button mat-icon-button (click)="cartState.updateQuantity(item.id, -1)">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span>{{ item.quantity }}</span>
+          <button mat-icon-button (click)="cartState.updateQuantity(item.id, 1)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <span class="item-price">
+          {{ CartCalculator.calculateItemSubtotal(item, offerState.offers()) | currency:'EUR' }}
+        </span>
+        <button mat-icon-button color="warn" (click)="cartState.removeFromCart(item.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </mat-list-item>
+  </mat-list>
 
-          <div matListItemTitle>
-            <strong>{{ item.name }}</strong>
-            @if (CartCalculator.isOfferActive(item, offerState.offers())) {
-              <span class="offer-tag">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">local_offer</mat-icon>
-                  Offer Applied
-                </span>            }
-          </div>
+  <div *ngIf="cartState.items().length === 0" class="empty-cart-message">
+    Your cart is empty.
+  </div>
 
-          <div matListItemLine>
-            {{ item.price | currency:'EUR' }} per unit
-          </div>
+  <div *ngIf="cartState.items().length > 0" class="total-price">
+    <strong>Total: {{ cartState.totalPrice() | currency:'EUR' }}</strong>
+  </div>
 
-          <div matListItemMeta class="quantity-controls">
-            <button mat-icon-button (click)="cartState.updateQuantity(item.id, -1)">
-              <mat-icon>remove_circle_outline</mat-icon>
-            </button>
+  <div *ngIf="cartState.items().length > 0" class="customer-form-container">
+    <h3>Customer Details</h3>
+    <form [formGroup]="customerForm" class="customer-form">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" placeholder="John">
+        <mat-error *ngIf="customerForm.get('firstName')?.hasError('required')">
+          First name is required
+        </mat-error>
+      </mat-form-field>
 
-            <span class="quantity-value">{{ item.quantity }}</span>
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" placeholder="Doe">
+        <mat-error *ngIf="customerForm.get('lastName')?.hasError('required')">
+          Last name is required
+        </mat-error>
+      </mat-form-field>
 
-            <button mat-icon-button color="primary" (click)="cartState.updateQuantity(item.id, 1)">
-              <mat-icon>add_circle_outline</mat-icon>
-            </button>
+      <mat-form-field appearance="outline">
+        <mat-label>Street</mat-label>
+        <input matInput formControlName="street" placeholder="123 Main St">
+        <mat-error *ngIf="customerForm.get('street')?.hasError('required')">
+          Street is required
+        </mat-error>
+      </mat-form-field>
 
-            <span class="item-total">
-              {{ CartCalculator.calculateItemSubtotal(item, offerState.offers()) | currency:'EUR' }}
-            </span>
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="city" placeholder="New York">
+        <mat-error *ngIf="customerForm.get('city')?.hasError('required')">
+          City is required
+        </mat-error>
+      </mat-form-field>
 
-            <button mat-icon-button color="warn" class="delete-button" (click)="cartState.removeFromCart(item.id)" aria-label="Remove item from cart">
-              <mat-icon>delete_forever</mat-icon>
-            </button>
-          </div>
-        </mat-list-item>
-      }
-    </mat-list>
+      <mat-form-field appearance="outline">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" placeholder="USA">
+        <mat-error *ngIf="customerForm.get('country')?.hasError('required')">
+          Country is required
+        </mat-error>
+      </mat-form-field>
 
-    <div class="total-section">
-      <h3>Total Amount: {{ cartState.totalPrice() | currency:'EUR' }}</h3>
-    </div>
-  }
+      <mat-form-field appearance="outline">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phoneNumber" placeholder="+1 555 1234">
+        <mat-error *ngIf="customerForm.get('phoneNumber')?.hasError('required')">
+          Phone number is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" placeholder="john.doe@example.com">
+        <mat-error *ngIf="customerForm.get('email')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="customerForm.get('email')?.hasError('email')">
+          Please enter a valid email address
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </div>
+
 </mat-dialog-content>
-
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Continue Shopping</button>
-  <button mat-flat-button color="primary" (click)="checkout()" [disabled]="cartState.items().length === 0">
-    Order Now
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-raised-button color="primary"
+          [disabled]="cartState.items().length === 0 || customerForm.invalid"
+          (click)="checkout()">
+    Checkout
   </button>
 </mat-dialog-actions>
